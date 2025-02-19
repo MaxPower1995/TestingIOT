@@ -1,0 +1,61 @@
+#include <Arduino.h>
+#include <WiFi.h>
+#include <Wire.h>
+#include <RTClib.h>
+
+// Declaramos un RTC DS3231
+RTC_DS3231 rtc;
+unsigned long unixTime;  // Variable global para almacenar el timestamp
+
+void setup () {
+ Serial.begin(115200);
+ 
+ delay(3000);
+ 
+ // Comprobamos si tenemos el RTC conectado
+ if (! rtc.begin()) {
+ Serial.println("No hay un módulo RTC");
+ while (1);
+ }
+ 
+ // Ponemos en hora, solo la primera vez, luego comentar y volver a cargar.
+ // Ponemos en hora con los valores de la fecha y la hora en que el sketch ha sido compilado.
+ //rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
+}
+ 
+void loop () {
+ DateTime now = rtc.now();
+ 
+ Serial.print(now.day());
+ Serial.print('/');
+ Serial.print(now.month());
+ Serial.print('/');
+ Serial.print(now.year());
+ Serial.print(" ");
+ Serial.print(now.hour());
+ Serial.print(':');
+ Serial.print(now.minute());
+ Serial.print(':');
+ Serial.print(now.second());
+ Serial.println();
+ delay(3000);
+}
+
+void unixTimeStamp() {
+  DateTime now = rtc.now();
+
+  struct tm t;
+  t.tm_year = now.year() - 1900;  // Año desde 1900
+  t.tm_mon  = now.month() - 1;    // Mes de 0 a 11
+  t.tm_mday = now.day();
+  t.tm_hour = now.hour();
+  t.tm_min  = now.minute();
+  t.tm_sec  = now.second();
+
+  unixTime = mktime(&t);  // Convertir a UNIX timestamp
+
+  Serial.print("Unix Time: ");
+  Serial.println(unixTime);
+
+  delay(3000);
+}

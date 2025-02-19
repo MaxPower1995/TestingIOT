@@ -1,0 +1,222 @@
+#include <Arduino.h>
+#include <WiFi.h>
+#include <PubSubClient.h>
+#include "DHT.h"
+#include <PZEM004Tv30.h>
+#include <OneWire.h>
+#include <DallasTemperature.h>
+#include <Preferences.h>
+#include "Adafruit_MQTT.h"
+#include "Adafruit_MQTT_Client.h"
+
+#define PZEM_RX_PIN 16 // MUX_SIG
+#define PZEM_TX_PIN 17
+#define PZEM_SERIAL Serial2
+
+#define MUX_A 27 //5
+#define MUX_B 14 //18 
+
+#define EQUIPO "SERIE2"
+#define ESP_CLIENT_NAME espClient2
+WiFiClient ESP_CLIENT_NAME;
+PubSubClient client(ESP_CLIENT_NAME);
+const char* CLIENT_ID = "espClient2";
+
+PZEM004Tv30 pzem(PZEM_SERIAL, PZEM_RX_PIN, PZEM_TX_PIN);
+
+float voltajeR = 0;
+float corrienteR = 0;
+
+float voltajeS = 0;
+float corrienteS = 0;
+
+float voltajeT = 0;
+float corrienteT = 0;
+
+const char* redes[3][2] = {
+    {"e-Invitados", "Edenor2022$"},
+    {"EMSETEC4G", "IOT2024EMSETEC"},
+    {"Fibertel Wifi 100 2.4", "01416929868"}
+  };
+
+//const char* mqtt_server = "143.198.66.52";// Broker EDENOR
+const char* mqtt_server = "143.244.186.22"; // Broker Prueba
+//    {"HUAWEI_311_1B94", "Maxpower1995"},
+
+const char* mqtt_user = "emsetec";
+const char* mqtt_pass = "84705200";
+
+//Variables para enviar datos por MQTT
+const unsigned long TIEMPO_DE_ENVIO = 10000;  
+const unsigned long RESET = 3600000*2;  // 1 hora en milisegundos
+unsigned long ultimoEnvio = 0;  // Tiempo de la última ejecución
+unsigned long tiempoActual = 0;
+unsigned long tiempoReset = 0;
+
+int maxWifiSSID = 3;
+int maxWifiRetry = 10;
+
+void wifiInit(const char* redes[][2], int num_redes, int max_intentos);
+void reconnect();
+void enviarDatosMQTT();
+void stopWiFi();
+
+// Se puede usar la funcion bit Read
+void setup() {
+  Serial.begin(115200);
+  delay(1000); // Espera a que se inicie el monitor serie
+  pinMode(MUX_A, OUTPUT);
+  pinMode(MUX_B, OUTPUT);
+
+
+  Serial.print("Este es el Modulo: ");
+  Serial.println(EQUIPO);
+
+  if (strcmp(mqtt_server, "143.198.66.52") == 0) {
+    Serial.println("Conectado al Broker de EDENOR");
+  } else {
+    Serial.println("Conectado al Broker de PRUEBAS");
+  }
+
+  wifiInit(redes, maxWifiSSID, maxWifiRetry); // 3 redes y 10 intentos por cada una
+  client.setServer(mqtt_server, 1884);
+}
+
+void loop() {
+    tiempoReset = millis();
+    if (tiempoReset >= RESET) {
+      ESP.restart();
+    }
+  
+    tiempoActual = millis();
+  
+    if (tiempoActual - ultimoEnvio >= TIEMPO_DE_ENVIO) {
+      Serial.println("Canal 1 Activado");
+      digitalWrite(MUX_A, 1);
+      digitalWrite(MUX_B, 0);
+      delay(2000);
+  
+      voltajeR = pzem.voltage();
+      if (isnan(voltajeR) || voltajeR > 1000) voltajeR = 0;  // Manejo de NaN y valores anómalos
+      delay(1000);
+      corrienteR = pzem.current();
+      if (isnan(corrienteR)|| voltajeR > 1000) corrienteR = 0;  
+  
+      printf("Voltaje Fase R: %f \n", voltajeR);
+      printf("Corriente Fase R: %f\n", corrienteR);
+  
+      delay(1000);
+      Serial.println("Canal 2 Activado");
+      digitalWrite(MUX_A, 0);
+      digitalWrite(MUX_B, 1);
+      delay(2000);
+  
+      voltajeS = pzem.voltage();
+      if (isnan(voltajeS) || voltajeS > 1000) voltajeS = 0;
+      delay(1000);
+      corrienteS = pzem.current();
+      if (isnan(corrienteS)|| voltajeS > 1000) corrienteS = 0;
+  
+      printf("Voltaje Fase S: %f \n", voltajeS);
+      printf("Corriente Fase S: %f\n", corrienteS);
+  
+      delay(1000);
+      Serial.println("Canal 3 Activado");
+      digitalWrite(MUX_A, 1);
+      digitalWrite(MUX_B, 1);
+      delay(2000);
+  
+      voltajeT = pzem.voltage();
+      if (isnan(voltajeT) || voltajeT > 1000) voltajeT = 0;
+      delay(1000);
+      corrienteT = pzem.current();
+      if (isnan(corrienteT)|| voltajeT > 1000) corrienteT = 0;
+  
+      printf("Voltaje Fase T: %f \n", voltajeT);
+      printf("Corriente Fase T: %f\n", corrienteT);
+  
+      delay(1000);
+      enviarDatosMQTT();
+      ultimoEnvio = tiempoActual;
+      Serial.println("Datos enviados");
+    }
+  }
+
+void stopWiFi() {
+    WiFi.disconnect(true); // Desconecta y detiene el Wi-Fi
+    WiFi.mode(WIFI_OFF);   // Apaga el módulo Wi-Fi
+    delay(10);             // Pequeño retraso para asegurarte de que se detuvo
+}
+
+//---------------- VOID CONECTAR WiFi -------------------
+void wifiInit(const char* redes[][2], int numRedes, int max_intentos) {
+  Serial.println("Iniciando conexión WiFi...");
+  bool conectado = false;
+  // Intentar conectarse con las redes del vector
+  for (int i = 0; i < numRedes; i++) {
+    const char* ssid = redes[i][0];
+    const char* password = redes[i][1];
+
+    Serial.print("Intentando conectar a: ");
+    Serial.println(ssid);
+
+    WiFi.begin(ssid, password);
+
+    for (int j = 0; j < max_intentos; j++) {
+      if (WiFi.status() == WL_CONNECTED) {
+        conectado = true;
+        Serial.println("\nConexión exitosa.");
+        Serial.print("IP: ");
+        Serial.println(WiFi.localIP());
+        return;
+      }
+      delay(500);
+      Serial.print(".");
+    }
+    if (!conectado) {
+      Serial.println("\nNo se pudo conectar a esta red.");
+    }
+  }
+  // Si no se conecta a ninguna red, reinicia el ESP32
+  Serial.println("Error: No se pudo conectar a ninguna red, reiniciando...");
+  ESP.restart();
+}
+
+//----------------- VOID CONECTAR MQTT ----------
+void reconnect() {
+    Serial.print("Intentando conectar a MQTT...");
+    if ("ESP32S2Client") {
+      Serial.println("conectado");
+    } else {
+      Serial.print("fallo, rc=");
+      Serial.print(client.state());
+      ESP.restart();
+      delay(5000);
+  }
+}
+
+void enviarDatosMQTT(){
+  if (!WiFi.isConnected()) {
+    Serial.println("Wi-Fi desconectado. Intentando reconectar...");
+    //wifiInit();
+    wifiInit(redes, maxWifiSSID, maxWifiRetry);
+  }
+
+  if (!client.connected()) {
+    reconnect();
+  }
+  //Se debe colocar el numero de cliente correspondiente al modulo utilizado
+  if (!client.loop())
+    client.connect(CLIENT_ID, mqtt_user, mqtt_pass);
+
+  client.publish("EMSETEC/" EQUIPO "/FASER/VOLTAJE:", String(voltajeR).c_str());delay(250);
+  client.publish("EMSETEC/" EQUIPO "/FASES/VOLTAJE:", String(voltajeS).c_str());delay(250);
+  client.publish("EMSETEC/" EQUIPO "/FASET/VOLTAJE:", String(voltajeT).c_str());delay(250);
+  client.publish("EMSETEC/" EQUIPO "/FASER/CORRIENTE:", String(corrienteR).c_str());delay(250);
+  client.publish("EMSETEC/" EQUIPO "/FASES/CORRIENTE:", String(corrienteS).c_str());delay(250);
+  client.publish("EMSETEC/" EQUIPO "/FASET/CORRIENTE:", String(corrienteT).c_str());delay(250);
+
+
+}
+
+

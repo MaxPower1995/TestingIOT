@@ -1,0 +1,222 @@
+//-------------------LIBRERIA--------------------------
+
+//Librerias a utilizar en en el programa
+#include <WiFi.h>
+#include <PubSubClient.h>
+#include "DHT.h"
+#include <PZEM004Tv30.h>
+#include "Adafruit_MQTT.h"
+#include "Adafruit_MQTT_Client.h"
+
+
+#define PZEM_RX_PIN 16
+#define PZEM_TX_PIN 17
+#define PZEM_SERIAL Serial2
+#define EQUIPO "SERIE200"
+
+PZEM004Tv30 pzem(PZEM_SERIAL, PZEM_RX_PIN, PZEM_TX_PIN);
+
+
+//-------- Datos de conexion WiFi y MQTT Mosquito ---------------
+
+// Usuario y clave del WiFi
+// Habilitar o incluir la red WiFi a utlizar
+
+
+const char* ssid = "e-Invitados";
+const char* password = "Edenor2022$";
+
+////const char* ssid = "EMSETEC-2.4GHz";
+//const char* password = "33710081099";
+
+
+//Incluir la direccion del servidor MQTT
+//const char* mqtt_server = "143.198.66.52";// Broker en proceso
+const char* mqtt_server = "143.244.186.22"; // Broker Prueba
+const char* mqtt_user = "emsetec";
+const char* mqtt_pass = "84705200";
+
+// Conectamos como cliente al Servidor
+// El numero de cliente debe coincidir con el modulo que estamos utilizando
+
+WiFiClient espClient1;
+PubSubClient client(espClient1);
+int cont = 0;
+int max_intentos = 10;
+
+//Si se usa el arduino IDE quiza hay que borrar estas definiciones de funciones
+void setup_wifi();
+void reconnect();
+void leerENCENDIDO();
+void leerREINICIAR();
+void leerPZEMR();
+void leerPZEMS();
+void leerPZEMT();
+
+float voltajeR = 0;
+float voltajeS = 0;
+float voltajeT = 0;
+
+//-------------------- VOID SETUP -------------
+
+void setup() {
+  pinMode(12, OUTPUT); // D1 salida digital activa optoacopladores 
+  digitalWrite(12, LOW);
+  pinMode(14, OUTPUT); // D6 salida digital activa optoacopladores
+  digitalWrite(14, LOW);
+  pinMode(27, OUTPUT); // D5 salida digital activa optoacopladores
+  digitalWrite(27, LOW);
+  pinMode(33, OUTPUT); // Sensor encendido
+  pinMode(5, OUTPUT); //  Detector 1
+  digitalWrite(5, LOW);
+  pinMode(18, OUTPUT); // Detector 2
+  digitalWrite(18, LOW);
+  pinMode(19, OUTPUT); // Detector 3
+  digitalWrite(19, LOW);
+  pinMode(21, OUTPUT); // Detector 4
+  digitalWrite(21, LOW);
+  pinMode(25, OUTPUT); // RELE
+  digitalWrite(25, LOW);
+  pinMode(26, OUTPUT); // RELE 2
+  digitalWrite(26, LOW);
+
+
+
+  Serial.begin(115200);
+  
+  setup_wifi();
+  
+  client.setServer(mqtt_server, 1884);
+
+}
+
+
+
+
+void loop() {
+digitalWrite(14, LOW);
+digitalWrite(27, LOW);
+digitalWrite(12, LOW);
+
+delay(2000);
+pzem.resetEnergy();
+digitalWrite(12, HIGH);
+delay(10000);
+Serial.println("FASE R");
+reconnect();
+
+voltajeR = pzem.voltage();
+voltajeR = voltajeR*sqrt(3);
+printf("Voltaje Fase R: %f",voltajeR);
+
+
+//-------------- FASE S --------------
+
+digitalWrite(14, LOW);
+digitalWrite(27, LOW);
+digitalWrite(12, LOW);
+
+
+
+delay(2000);
+pzem.resetEnergy();
+digitalWrite(14, HIGH);
+
+
+delay(10000);
+  Serial.println("FASE S");
+
+
+voltajeS = pzem.voltage();
+voltajeS = voltajeS*sqrt(3);
+printf("Voltaje Fase S: %f",voltajeS);
+
+
+//------------- FASE T -----------------
+digitalWrite(14, LOW);
+digitalWrite(27, LOW);
+digitalWrite(12, LOW);
+
+delay(2000);
+pzem.resetEnergy();
+ digitalWrite(27, HIGH);
+
+delay(10000);
+  Serial.println("FASE T");
+
+voltajeT = pzem.voltage();
+voltajeT = voltajeT*sqrt(3);
+printf("Voltaje Fase T: %f",voltajeT);
+
+
+// Conectar a Mosquito
+  if (!client.connected()) {
+    reconnect();
+  }
+  //Se debe colocar el numero de cliente correspondiente al modulo utilizado
+  if (!client.loop())
+    client.connect("espClient1", mqtt_user, mqtt_pass);
+
+  client.publish("EMSETEC/" EQUIPO "/FASER/VOLTAJE:", String(voltajeR).c_str());
+  delay(100);
+  client.publish("EMSETEC/" EQUIPO "/FASES/VOLTAJE:", String(voltajeS).c_str());
+  delay(100);
+  client.publish("EMSETEC/" EQUIPO "/FASET/VOLTAJE:", String(voltajeT).c_str());
+  delay(1000);
+}
+
+
+//---------------- VOID SENSOR ENCENDIDO -------------------
+void leerENCENDIDO() {
+  
+digitalWrite(33, LOW);
+  delay(1000);
+  digitalWrite(33, HIGH);
+  
+}
+
+  
+  
+//---------------- VOID CONECTAR WiFi -------------------
+void setup_wifi() {
+
+  delay(10);
+  Serial.println();
+  Serial.print("Conectando a: ");
+  Serial.println(ssid);
+  WiFi.begin(ssid, password);
+  while (WiFi.status() != WL_CONNECTED and cont < max_intentos) {
+    cont++;
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println("");
+  Serial.print("WiFi conectado - ESP IP : ");
+  Serial.println(WiFi.localIP());
+}
+
+
+
+//----------------- VOID CONECTAR MQTT ----------
+void reconnect() {
+
+   
+ // while (!client.connected()) {
+    Serial.print("Intentando conectar a MQTT...");
+    if ("ESP32S2Client") {
+      Serial.println("conectado");
+    
+     } else {
+      Serial.print("fallo, rc=");
+      Serial.print(client.state());
+ //     Serial.println(" volveremos a conectar en 5 segundos");
+      ESP.restart();
+      delay(5000);
+ //   }
+  }
+}
+
+
+
+
+  

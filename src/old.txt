@@ -1,0 +1,1162 @@
+/***************************************************
+             MODULO IoT
+            SERIE 17 - 6 On/Off - 220V
+            ISIDRO CASANOVA
+Envia al servidor Mosquito y a Adafruit la informacion 
+  Sensores pinout conectados:
+    
+   TemperaturaDHT-3                GPIO4
+    Detector 6                   GPIO2
+    Temperatura DHT-1              GPIO0
+    Detector 5                   GPIO15
+    Conmutacion de optoacoplador       GPIO12, GPIO14 Y GPIO27
+    Voltaje y corriente                GPIO16 Y GPIO17
+    Detector 1                         GPIO5 
+    Detector 2                         GPIO18
+    Detector 3                         GPIO19
+    Detector 4                         GPIO 21
+    COMBUSTIBLE Y BATERIA              GPIO 32
+  
+         Alberto Bava Septiembre 2024
+
+ ****************************************************/
+
+//-------------------LIBRERIA--------------------------
+
+//Librerias a utilizar en en el programa
+#include <WiFi.h>
+#include <PubSubClient.h>
+#include "DHT.h"
+#include <PZEM004Tv30.h>
+#include "Adafruit_MQTT.h"
+#include "Adafruit_MQTT_Client.h"
+//#include <OneWire.h> 
+//#include <DallasTemperature.h>
+
+//OneWire ourWire1(15);                //Se establece el pin 15  como bus OneWire
+//OneWire ourWire2(4);                //Se establece el pin 4  como bus OneWire
+ 
+//DallasTemperature sensors1(&ourWire1); //Se declara una variable u objeto para nuestro sensor1
+//DallasTemperature sensors2(&ourWire2); //Se declara una variable u objeto para nuestro sensor2
+
+
+
+
+#if !defined(PZEM_RX_PIN) && !defined(PZEM_TX_PIN)
+#define PZEM_RX_PIN 16
+#define PZEM_TX_PIN 17
+#endif
+
+#if !defined(PZEM_SERIAL)
+#define PZEM_SERIAL Serial2
+#endif
+
+PZEM004Tv30 pzem(PZEM_SERIAL, PZEM_RX_PIN, PZEM_TX_PIN);
+
+//Definiciones del sensor de temperatura y humedad
+#define DHTTYPE DHT11   // DHT 11
+//#define DHTTYPE2 DHT11   // DHT 11-2
+#define DHTTYPE3 DHT11   // DHT 11-3
+//#define DHTTYPE4 DHT11   // DHT 11-3
+
+void setup_wifi();
+void reconnect();
+void leerENCENDIDO();
+void leerREINICIAR();
+void leerPZEMR();
+void leerPZEMS();
+void leerPZEMT();
+void leerNA();
+void leerRELE();
+void leerDETECTOR1();
+void leerDETECTOR2();
+void leerDETECTOR3();
+void leerDETECTOR4();
+void leerDETECTOR5();
+void leerDETECTOR6();
+
+
+
+//-------- Datos de conexion WiFi y MQTT Mosquito ---------------
+
+// Usuario y clave del WiFi
+// Habilitar o incluir la red WiFi a utlizar
+
+//const char* ssid = "EMSETEC-2.4GHz";
+//const char* password = "33710081099";
+
+//const char* ssid = "TP-LINK_Extender_85A750";
+//const char* password = "0041008041";
+
+//const char* ssid = "HUAWEI-85CF";
+//const char* password = "80478412";
+
+//const char* ssid = "FiberCorp WiFi117 2.4GHz";
+//const char* password =  "0103371008";
+
+//const char* ssid = "FiberCorp WiFi498 2.4GHz";
+//const char* password =  "0103020300";
+
+//const char* ssid = "e-Invitados";
+//const char* password = "Edenor2022$";
+
+//const char* ssid = "MERCUSYS_D580";
+//const char* password = "Emsetec$2023";
+
+//const char* ssid = "HUAWEI_311_F243";
+//const char* password = "BHYB4Y3EFRB";
+
+const char* ssid = "HUAWEI_311_F243";
+const char* password = "Maxpower1995";
+
+//Incluir la direccion del servidor MQTT
+const char* mqtt_server = "143.198.66.52";// Broker produccion
+//const char* mqtt_server = "143.244.186.22"; // Broker Prueba
+const char* mqtt_user = "emsetec";
+const char* mqtt_pass = "84705200";
+
+//Muestras para promedio para conversor AD
+const int numSamples = 100; // Número de muestras para integrar
+
+// Conectamos como cliente al Servidor
+// El numero de cliente debe coincidir con el modulo que estamos utilizando
+WiFiClient espClient17;
+PubSubClient client(espClient17);
+
+
+// Pin de entrada para DHT
+const int DHTPin = 4;
+//const int DHTPin2 = 2;
+const int DHTPin3 = 0;
+//const int DHTPin4 = 15;
+
+int Valor = 0;
+int UltimoValor = 0;
+
+float Valor2 = 0;
+float UltimoValor2 = 0;
+
+// Inicializamos DHT sensor.
+DHT dht(DHTPin, DHTTYPE);
+//DHT dht2(DHTPin2, DHTTYPE2);
+DHT dht3(DHTPin3, DHTTYPE3);
+//DHT dht4(DHTPin4, DHTTYPE4);
+
+// Tiempo para las variables
+long now = millis();
+long lastMeasure = 0;
+
+int ESTADO = 0;
+char charESTADO [15];
+String strESTADO;
+String strESTADOUltimo;
+
+char charNIVEL [15];
+String strNIVEL;
+String strNIVELUltimo;
+
+char charNIVEL2 [15];
+String strNIVEL2;
+String strNIVEL2Ultimo;
+
+char charNIVEL3 [15];
+String strNIVEL3;
+String strNIVEL3Ultimo;
+
+char charNIVEL4 [15];
+String strNIVEL4;
+String strNIVEL4Ultimo;
+
+char charNIVEL5 [15];
+String strNIVEL5;
+String strNIVEL5Ultimo;
+
+byte cont = 0;
+byte max_intentos = 50;
+
+
+//--------------------VOID RESET--------------------------------
+
+void(* resetFunc) (void) = 0; // Reinicia todo sin conexión de WiFi
+
+
+
+//-------------------- VOID SETUP -------------
+
+void setup() {
+
+
+//  HABILITACION DE SALIDAS 
+  pinMode(12, OUTPUT); // D1 salida digital activa optoacopladores 
+  digitalWrite(12, LOW);
+  pinMode(14, OUTPUT); // D6 salida digital activa optoacopladores
+  digitalWrite(14, LOW);
+  pinMode(27, OUTPUT); // D5 salida digital activa optoacopladores
+  digitalWrite(27, LOW);
+  pinMode(33, OUTPUT); // Sensor encendido
+  pinMode(5, OUTPUT); //  Detector 1
+  digitalWrite(5, LOW);
+  pinMode(18, OUTPUT); // Detector 2
+  digitalWrite(18, LOW);
+  pinMode(19, OUTPUT); // Detector 3
+  digitalWrite(19, LOW);
+  pinMode(21, OUTPUT); // Detector 4
+  digitalWrite(21, LOW);
+  pinMode(25, OUTPUT); // RELE
+  digitalWrite(25, LOW);
+  pinMode(26, OUTPUT); // RELE 2
+  digitalWrite(26, LOW);
+
+  //  HABILITACION DE SALIDAS 
+//  pinMode(0, OUTPUT); // Detector 6
+//  digitalWrite(0, LOW);
+  pinMode(2, OUTPUT); // Detector 5
+  digitalWrite(2, LOW);
+// pinMode(4, OUTPUT); // Detector 7
+//  digitalWrite(4, LOW);
+  pinMode(15, OUTPUT); // Detector 8
+  digitalWrite(15, LOW);
+  
+ dht.begin();
+ //dht2.begin();
+ dht3.begin();
+ //dht4.begin();
+
+//sensors1.begin();   //Se inicia el sensor 1
+//sensors2.begin();   //Se inicia el sensor 2
+
+  Serial.begin(115200);
+  
+  setup_wifi();
+  
+  client.setServer(mqtt_server, 1884);
+
+
+
+  // Parpadeo rapido de conexion
+
+  digitalWrite(33, LOW);
+  delay(500);
+  digitalWrite(33, HIGH);
+  delay(500);
+  digitalWrite(33, LOW);
+  delay(500);
+  digitalWrite(33, HIGH);
+  delay(500);
+  digitalWrite(33, LOW);
+  delay(500);
+  digitalWrite(33, HIGH);
+  delay(500);
+  digitalWrite(33, LOW);
+  digitalWrite(33, HIGH);
+  delay(500);
+  digitalWrite(33, LOW);
+
+
+
+}
+
+
+//------------------- VOID LOOP -----------------
+
+void loop() {
+
+// Conectar a Mosquito
+  if (!client.connected()) {
+    reconnect();
+  }
+  //Se debe colocar el numero de cliente correspondiente al modulo utilizado
+  if (!client.loop())
+    client.connect("espClient17", mqtt_user, mqtt_pass);
+
+
+leerREINICIAR();
+leerENCENDIDO();
+
+   
+//-------------- FASE R --------------
+
+digitalWrite(27, LOW);
+
+
+ leerREINICIAR();
+ leerENCENDIDO();
+
+
+ delay(1000);
+ leerRELE();
+
+ leerREINICIAR();
+ leerENCENDIDO();
+
+ leerNA();
+
+ leerREINICIAR();
+ leerENCENDIDO();
+
+ delay(1000);
+ digitalWrite(12, HIGH);
+ 
+leerREINICIAR();
+leerENCENDIDO();
+
+delay(1000);
+leerDETECTOR1();
+
+leerREINICIAR();
+leerENCENDIDO();
+
+delay(1000);
+leerDETECTOR2();
+
+leerREINICIAR();
+leerENCENDIDO();
+
+delay(1000);
+leerDETECTOR3();
+
+leerREINICIAR();
+leerENCENDIDO();
+
+delay(1000);
+leerDETECTOR4();
+
+leerREINICIAR();
+leerENCENDIDO();
+
+delay(1000);
+leerDETECTOR5();
+
+leerREINICIAR();
+ leerENCENDIDO();
+
+ delay(1000);
+leerDETECTOR6();
+
+leerREINICIAR();
+ leerENCENDIDO();
+
+delay(1000);
+leerdht1();
+
+leerREINICIAR();
+leerENCENDIDO();
+
+ delay(1000);
+leerdht3();
+
+delay(1000);
+ Serial.println("     FASE R");
+ leerPZEMR();
+ 
+
+
+//-------------- FASE S --------------
+
+digitalWrite(12, LOW);
+
+leerREINICIAR();
+leerENCENDIDO();
+
+
+delay(1000);
+ leerRELE();
+
+ leerREINICIAR();
+ leerENCENDIDO();
+
+ leerNA();
+
+ leerREINICIAR();
+ leerENCENDIDO();
+
+delay(1000);
+digitalWrite(14, HIGH);
+
+leerREINICIAR();
+leerENCENDIDO();
+
+ delay(1000);
+leerDETECTOR1();
+
+leerREINICIAR();
+leerENCENDIDO();
+
+delay(1000);
+leerDETECTOR2();
+
+leerREINICIAR();
+leerENCENDIDO();
+
+delay(1000);
+leerDETECTOR3();
+
+leerREINICIAR();
+leerENCENDIDO();
+
+delay(1000);
+leerDETECTOR4();
+
+leerREINICIAR();
+leerENCENDIDO();
+
+delay(1000);
+leerDETECTOR5();
+
+leerREINICIAR();
+ leerENCENDIDO();
+
+ delay(1000);
+leerDETECTOR6();
+
+leerREINICIAR();
+ leerENCENDIDO();
+
+ delay(1000);
+leerdht1();
+
+leerREINICIAR();
+leerENCENDIDO();
+
+ delay(1000);
+leerdht3();
+
+delay(1000);
+  Serial.println("     FASE S");
+  leerPZEMS();
+
+leerREINICIAR();
+leerENCENDIDO();
+
+//------------- FASE T -----------------
+
+  digitalWrite(14, LOW);
+
+leerREINICIAR();
+leerENCENDIDO();
+
+delay(1000);
+ leerRELE();
+
+ leerREINICIAR();
+ leerENCENDIDO();
+
+ leerNA();
+
+ leerREINICIAR();
+ leerENCENDIDO();
+
+delay(1000);
+digitalWrite(27, HIGH);
+
+leerREINICIAR();
+leerENCENDIDO();
+
+delay(1000);
+leerDETECTOR1();
+
+leerREINICIAR();
+leerENCENDIDO();
+
+delay(1000);
+leerDETECTOR2();
+
+leerREINICIAR();
+leerENCENDIDO();
+
+delay(1000);
+leerDETECTOR3();
+
+leerREINICIAR();
+leerENCENDIDO();
+
+delay(1000);
+leerDETECTOR4();
+
+leerREINICIAR();
+leerENCENDIDO();
+
+delay(1000);
+leerDETECTOR5();
+
+leerREINICIAR();
+ leerENCENDIDO();
+
+ delay(1000);
+leerDETECTOR6();
+
+leerREINICIAR();
+ leerENCENDIDO();
+
+delay(1000);
+leerdht1();
+
+leerREINICIAR();
+leerENCENDIDO();
+
+ delay(1000);
+leerdht3();
+
+delay(1000);
+  Serial.println("     FASE T");
+  leerPZEMT();
+
+leerREINICIAR();
+leerENCENDIDO();
+
+ 
+}
+
+
+//---------------- VOID SENSOR ENCENDIDO -------------------
+void leerENCENDIDO() {
+  
+digitalWrite(33, LOW);
+  delay(1000);
+  digitalWrite(33, HIGH);
+  
+}
+
+  
+  
+//---------------- VOID CONECTAR WiFi -------------------
+void setup_wifi() {
+
+  delay(10);
+  Serial.println();
+  Serial.print("Conectando a: ");
+  Serial.println(ssid);
+  WiFi.begin(ssid, password);
+  while (WiFi.status() != WL_CONNECTED and cont < max_intentos) {
+    cont++;
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println("");
+  Serial.print("WiFi conectado - ESP IP : ");
+  Serial.println(WiFi.localIP());
+}
+
+ //--------------------VOID RESET WiFi--------------------------------
+
+   void leerREINICIAR() {
+     if (WiFi.status() == WL_CONNECTED) { 
+ }
+  else {resetFunc(); }; //call reset
+}
+
+//----------------- VOID CONECTAR MQTT ----------
+void reconnect() {
+
+   
+ // while (!client.connected()) {
+    Serial.print("Intentando conectar a MQTT...");
+    if ("espClient17") {
+      Serial.println("conectado");
+    
+     } else {
+      Serial.print("fallo, rc=");
+      Serial.print(client.state());
+ //     Serial.println(" volveremos a conectar en 5 segundos");
+      resetFunc();
+      delay(5000);
+ //   }
+  }
+}
+
+
+//-------------------- VOID DHT 1 -----------------------
+
+void leerdht1() {
+
+now = millis();
+  if (now - lastMeasure > 5000) {
+    lastMeasure = now;
+    float h = dht.readHumidity();
+    float t = dht.readTemperature();
+    
+    if (isnan(h) || isnan(t) ) {
+      Serial.println("Sin señal del sensor DHT1");
+      return;
+    }
+    
+    leerREINICIAR();
+    leerENCENDIDO();
+    
+    Serial.print("Temperatura DHT11 Sensor 1: "); Serial.print(t); Serial.println("ºC; ");
+    Serial.print("Humedad DHT11 Sensor 1: "); Serial.print(h); Serial.println("%; ");
+    static char temperatureTemp[7];
+    dtostrf(t, 6, 2, temperatureTemp);
+
+    static char humidityTemp[7];
+    dtostrf(h, 6, 2, humidityTemp);
+
+    
+    client.publish("EMSETEC/SERIE17/SENSOR1/TEMPERATURA:", temperatureTemp);
+    client.publish("EMSETEC/SERIE17/SENSOR1/HUMEDAD:", humidityTemp);
+   
+    delay(500);
+
+  }
+  }
+
+  
+
+//-------------------- VOID DHT 3 -----------------------
+
+void leerdht3() {
+
+now = millis();
+  if (now - lastMeasure > 5000) {
+    lastMeasure = now;
+    float h3 = dht3.readHumidity();
+    float t3 = dht3.readTemperature();
+    
+    if (isnan(h3) || isnan(t3) ) {
+      Serial.println("Sin señal del sensor DHT3");
+      return;
+    }
+
+    leerREINICIAR();
+    leerENCENDIDO();
+    
+    Serial.print("Temperatura DHT11 Sensor 3: "); Serial.print(t3); Serial.println("ºC; ");
+    Serial.print("Humedad DHT11 Sensor 3: "); Serial.print(h3); Serial.println("%; ");
+    static char temperatureTemp3[7];
+    dtostrf(t3, 6, 2, temperatureTemp3);
+
+    static char humidityTemp3[7];
+    dtostrf(h3, 6, 2, humidityTemp3);
+
+    client.publish("EMSETEC/SERIE17/SENSOR3/TEMPERATURA:", temperatureTemp3);
+    client.publish("EMSETEC/SERIE17/SENSOR3/HUMEDAD:", humidityTemp3);
+   
+    delay(500);
+
+  }
+  }
+
+
+
+  //--------------------VOID PZEM FASE R--------------------------------
+
+   void leerPZEMR() {
+
+  float v = pzem.voltage();
+      v= v * sqrt(3);
+        if( !isnan(v) ){
+        Serial.print("Voltaje: "); Serial.print(v); Serial.println("V; ");
+        static char Voltaje[7];
+        dtostrf(v, 6, 2, Voltaje);
+        client.publish("EMSETEC/SERIE17/FASER/VOLTAJE:", Voltaje);
+        
+         } else {
+        Serial.println("SIN LECTURA DE VOLTAJE:"); v=0;
+        static char Voltaje[7];
+        dtostrf(v, 6, 2, Voltaje);
+        client.publish("EMSETEC/SERIE17/FASER/VOLTAJE:", Voltaje);
+        
+        
+    }
+
+leerREINICIAR();
+leerENCENDIDO();
+
+delay(1000);
+    float i = 10*pzem.current();
+      if( !isnan(i) ){
+        Serial.print("Corriente: "); Serial.print(i); Serial.println("A; ");
+         static char Corriente[7];
+        dtostrf(i, 6, 2, Corriente);
+        client.publish("EMSETEC/SERIE17/FASER/CORRIENTE:", Corriente);
+        
+         } else {
+         Serial.println("SIN LECTURA DE CORRIENTE"); i=0;
+        static char Corriente[7];
+        dtostrf(i, 6, 2, Corriente);
+        client.publish("EMSETEC/SERIE17/FASER/CORRIENTE:", Corriente);
+        
+    }
+    Serial.println("-----------------------"); 
+
+    leerREINICIAR();
+    leerENCENDIDO();
+
+delay(1000);
+    float pf = pzem.pf();
+      if( !isnan(pf) ){
+        Serial.print("Factor de potencia "); Serial.print(pf); 
+         static char Factor[7];
+        dtostrf(pf, 6, 2, Factor);
+        client.publish("EMSETEC/SERIE17/FASER/PF:", Factor);
+        
+         } else {
+          Serial.println("SIN LECTURA DE FACTOR DE PF");pf=0;
+         static char Factor[7];
+        dtostrf(pf, 6, 2, Factor);
+        client.publish("EMSETEC/SERIE17/FASER/PF:", Factor);
+        
+    }
+    Serial.println("-----------------------"); 
+
+    leerREINICIAR();
+    leerENCENDIDO();
+
+delay(1000);
+    float p = 10*pzem.power();
+      if( !isnan(p) ){
+        Serial.print("Potencia: "); Serial.print(p); Serial.println("W; ");
+         static char Potencia[7];
+        dtostrf(p, 6, 2, Potencia);
+        client.publish("EMSETEC/SERIE17/FASER/POTENCIA:", Potencia);
+        
+         } else {p=0;
+         
+         static char Potencia[7];
+        dtostrf(p, 6, 2, Potencia);
+        client.publish("EMSETEC/SERIE17/FASER/POTENCIA:", Potencia);
+        
+       
+    }
+    Serial.println("-----------------------"); 
+
+    
+    }
+
+
+
+//--------------------VOID PZEM FASE S--------------------------------
+
+   void leerPZEMS() {
+
+  float v = pzem.voltage();
+       v= v * sqrt(3);
+  
+        if( !isnan(v) ){
+        Serial.print("Voltaje: "); Serial.print(v); Serial.println("V; ");
+        static char Voltaje[7];
+        dtostrf(v, 6, 2, Voltaje);
+        client.publish("EMSETEC/SERIE17/FASES/VOLTAJE:", Voltaje);
+        
+         } else {
+        Serial.println("SIN LECTURA DE VOLTAJE:"); v=0;
+        static char Voltaje[7];
+        dtostrf(v, 6, 2, Voltaje);
+        client.publish("EMSETEC/SERIE17/FASES/VOLTAJE:", Voltaje);
+        
+        
+    }
+
+leerREINICIAR();
+leerENCENDIDO();
+
+delay(1000);
+    float i = 10*pzem.current();
+          if( !isnan(i) ){
+        Serial.print("Corriente: "); Serial.print(i); Serial.println("A; ");
+         static char Corriente[7];
+        dtostrf(i, 6, 2, Corriente);
+        client.publish("EMSETEC/SERIE17/FASES/CORRIENTE:", Corriente);
+        
+         } else {
+         Serial.println("SIN LECTURA DE CORRIENTE");i=0;
+        static char Corriente[7];
+        dtostrf(i, 6, 2, Corriente);
+        client.publish("EMSETEC/SERIE17/FASES/CORRIENTE:", Corriente);
+        
+        
+    }
+    Serial.println("-----------------------"); 
+    
+    leerREINICIAR();
+    leerENCENDIDO();
+
+delay(1000);
+    float pf = pzem.pf();
+        if( !isnan(pf) ){
+        Serial.print("Factor de potencia "); Serial.print(pf); 
+         static char Factor[7];
+        dtostrf(pf, 6, 2, Factor);
+        client.publish("EMSETEC/SERIE17/FASES/PF:", Factor);
+       
+         } else {
+         
+        Serial.println("SIN LECTURA DE FACTOR DE POTENCIA");pf=0;
+         static char Factor[7];
+        dtostrf(pf, 6, 2, Factor);
+        client.publish("EMSETEC/SERIE17/FASES/PF:", Factor);
+        
+        
+    }
+    Serial.println("-----------------------"); 
+
+    leerREINICIAR();
+    leerENCENDIDO();
+
+delay(1000);
+    float p = 10*pzem.power();
+         if( !isnan(p) ){
+        Serial.print("Potencia: "); Serial.print(p); Serial.println("W; ");
+         static char Potencia[7];
+        dtostrf(p, 6, 2, Potencia);
+        client.publish("EMSETEC/SERIE17/FASES/POTENCIA:", Potencia);
+        
+         } else {         
+        Serial.println("SIN LECTURA DE POTENCIA");p=0;
+         static char Potencia[7];
+        dtostrf(p, 6, 2, Potencia);
+        client.publish("EMSETEC/SERIE17/FASES/POTENCIA:", Potencia);
+        
+        
+    }
+    Serial.println("-----------------------"); 
+
+    
+    }
+
+
+
+//--------------------VOID PZEM FASE T--------------------------------
+
+   void leerPZEMT() {
+
+  float v = pzem.voltage();
+       v= v * sqrt(3);
+           if( !isnan(v) ){
+        Serial.print("Voltaje: "); Serial.print(v); Serial.println("V; ");
+        static char Voltaje[7];
+        dtostrf(v, 6, 2, Voltaje);
+        client.publish("EMSETEC/SERIE17/FASET/VOLTAJE:", Voltaje);
+        
+         } else {
+        Serial.println("SIN LECTURA DE VOLTAJE"); v=0;
+        static char Voltaje[7];
+        dtostrf(v, 6, 2, Voltaje);
+        client.publish("EMSETEC/SERIE17/FASET/VOLTAJE:", Voltaje);
+      
+        
+    }
+
+leerREINICIAR();
+leerENCENDIDO();
+
+delay(1000);
+    float i = 10*pzem.current();
+         if( !isnan(i) ){
+        Serial.print("Corriente: "); Serial.print(i); Serial.println("A; ");
+         static char Corriente[7];
+        dtostrf(i, 6, 2, Corriente);
+        client.publish("EMSETEC/SERIE17/FASET/CORRIENTE:", Corriente);
+        
+         } else {
+        i=0;
+        static char Corriente[7];
+        dtostrf(i, 6, 2, Corriente);
+        client.publish("EMSETEC/SERIE17/FASET/CORRIENTE:", Corriente);
+        
+    }
+    Serial.println("-----------------------"); 
+
+leerREINICIAR();
+leerENCENDIDO();
+    
+delay(1000);
+    float pf = pzem.pf();
+          if( !isnan(pf) ){
+        Serial.print("Factor de potencia "); Serial.print(pf); 
+         static char Factor[7];
+        dtostrf(pf, 6, 2, Factor);
+        client.publish("EMSETEC/SERIE17/FASET/PF:", Factor);
+        
+         } else {
+         pf=0;
+         static char Factor[7];
+        dtostrf(pf, 6, 2, Factor);
+        client.publish("EMSETEC/SERIE17/FASET/PF:", Factor);
+        
+    }
+    Serial.println("-----------------------"); 
+
+    leerREINICIAR();
+    leerENCENDIDO();
+
+delay(1000);
+    float p = 10*pzem.power();
+         if( !isnan(p) ){
+        Serial.print("Potencia: "); Serial.print(p); Serial.println("W; ");
+         static char Potencia[7];
+        dtostrf(p, 6, 2, Potencia);
+        client.publish("EMSETEC/SERIE17/FASET/POTENCIA:", Potencia);
+       
+         } else {p=0;         
+         static char Potencia[7];
+        dtostrf(p, 6, 2, Potencia);
+        client.publish("EMSETEC/SERIE17/FASET/POTENCIA:", Potencia);
+        
+         
+    }
+    Serial.println("-----------------------"); 
+
+    
+    
+    }
+
+
+    
+
+  //------------------- VOID DETECTOR 1 --------------------------
+
+ void leerDETECTOR1() {
+  // Medidor ON/OFF:
+ ESTADO = digitalRead(5);
+
+    
+  if (ESTADO >= HIGH){
+    strESTADO = "ON";
+    strNIVEL = "ON";
+  } else {
+    strESTADO = "OFF";
+    strNIVEL = "OFF";
+  
+  }
+
+  
+ // if (strESTADO != strESTADOUltimo) { //envia el estado del AGUA
+    strESTADOUltimo = strESTADO;
+    strNIVELUltimo = strNIVEL;
+    strNIVEL.toCharArray(charNIVEL, 15);
+    strESTADO.toCharArray(charESTADO, 15);
+    Serial.print(F("\n DETECTOR 1:"));
+    Serial.println(strESTADO);
+    client.publish("EMSETEC/SERIE17/DETECTOR1/ESTADO:", charESTADO);
+   
+    
+   Serial.println("-----------------------"); 
+  }
+  
+  //------------------- VOID DETECTOR 2 --------------------------
+
+ void leerDETECTOR2() {
+  // Medidor ON/OFF:
+ ESTADO = digitalRead(18);
+
+    
+  if (ESTADO >= HIGH){
+    strESTADO = "ON";
+    strNIVEL2 = "ON";
+  } else {
+    strESTADO = "OFF";
+    strNIVEL2 = "OFF";
+  }
+
+  
+ // if (strESTADO != strESTADOUltimo) { //envia el estado del AGUA
+    strESTADOUltimo = strESTADO;
+     strNIVEL2Ultimo = strNIVEL2;
+    strNIVEL2.toCharArray(charNIVEL2, 15);
+    strESTADO.toCharArray(charESTADO, 15);
+    Serial.print(F("\n DETECTOR 2:"));
+    Serial.println(strESTADO);
+    client.publish("EMSETEC/SERIE17/DETECTOR2/ESTADO:", charESTADO);
+    
+   Serial.println("-----------------------"); 
+  }
+  
+   //------------------- VOID DETECTOR 3 --------------------------
+
+ void leerDETECTOR3() {
+  // Medidor ON/OFF:
+ ESTADO = digitalRead(19);
+
+    
+  if (ESTADO >= HIGH){
+    strESTADO = "ON";
+    strNIVEL3 = "ON";
+  } else {
+    strESTADO = "OFF";
+    strNIVEL3 = "OFF";
+  }
+
+  
+ // if (strESTADO != strESTADOUltimo) { //envia el estado del AGUA
+    strESTADOUltimo = strESTADO;
+   strNIVEL3Ultimo = strNIVEL3;
+    strNIVEL3.toCharArray(charNIVEL3, 15);
+    strESTADO.toCharArray(charESTADO, 15);
+    Serial.print(F("\n DETECTOR 3:"));
+    Serial.println(strESTADO);
+    client.publish("EMSETEC/SERIE17/DETECTOR3/ESTADO:", charESTADO);
+    
+   Serial.println("-----------------------"); 
+  }
+
+   //------------------- VOID DETECTOR 4 --------------------------
+
+ void leerDETECTOR4() {
+  // Medidor ON/OFF:
+ ESTADO = digitalRead(21);
+
+    
+  if (ESTADO >= HIGH){
+    strESTADO = "ON";
+    strNIVEL4 = "ON";
+  } else {
+    strESTADO = "OFF";
+    strNIVEL4 = "OFF";
+  }
+
+  
+ // if (strESTADO != strESTADOUltimo) { //envia el estado del AGUA
+    strESTADOUltimo = strESTADO;
+    strNIVEL4Ultimo = strNIVEL4;
+    strNIVEL4.toCharArray(charNIVEL4, 15);
+    strESTADO.toCharArray(charESTADO, 15);
+    Serial.print(F("\n DETECTOR 4:"));
+    Serial.println(strESTADO);
+    client.publish("EMSETEC/SERIE17/DETECTOR4/ESTADO:", charESTADO);
+     
+   Serial.println("-----------------------"); 
+  }
+
+  //-------------------- VOID DETECTOR 5 -----------------------
+
+void leerDETECTOR5() {
+ESTADO = digitalRead(15);
+
+    
+  if (ESTADO >= HIGH){
+    strESTADO = "ON";
+    strNIVEL = "ON";
+  } else {
+    strESTADO = "OFF";
+    strNIVEL = "OFF";
+  
+  }
+
+  
+ // if (strESTADO != strESTADOUltimo) { //envia el estado del AGUA
+    strESTADOUltimo = strESTADO;
+    strNIVELUltimo = strNIVEL;
+    strNIVEL.toCharArray(charNIVEL, 15);
+    strESTADO.toCharArray(charESTADO, 15);
+    Serial.print(F("\n DETECTOR 5:"));
+    Serial.println(strESTADO);
+    client.publish("EMSETEC/SERIE17/DETECTOR5/ESTADO:", charESTADO);
+   
+    
+   Serial.println("-----------------------");
+
+
+  }
+
+
+//-------------------- VOID DETECTOR 6 -----------------------
+
+void leerDETECTOR6() {
+ESTADO = digitalRead(2);
+
+    
+  if (ESTADO >= HIGH){
+    strESTADO = "ON";
+    strNIVEL = "ON";
+  } else {
+    strESTADO = "OFF";
+    strNIVEL = "OFF";
+  
+  }
+
+  
+ // if (strESTADO != strESTADOUltimo) { //envia el estado del AGUA
+    strESTADOUltimo = strESTADO;
+    strNIVELUltimo = strNIVEL;
+    strNIVEL.toCharArray(charNIVEL, 15);
+    strESTADO.toCharArray(charESTADO, 15);
+    Serial.print(F("\n DETECTOR 6:"));
+    Serial.println(strESTADO);
+    client.publish("EMSETEC/SERIE17/DETECTOR6/ESTADO:", charESTADO);
+   
+    
+   Serial.println("-----------------------");
+
+  }
+
+
+
+
+
+//--------------------VOID RELE--------------------------------
+
+void leerRELE() {
+
+// leer sensor de activado de rele de 220V
+
+
+}
+//--------------------VOID NIVEL DE AGUA--------------------------------
+
+
+  void leerNA() {
+
+//  Valor=analogRead(32);
+
+int total = 0;
+
+// Integrar las muestras
+  for (int i = 0; i < numSamples; i++) {
+    total += analogRead(32);
+    delay(10); // Pequeño retraso para evitar lecturas muy rápidas
+  }
+  
+  // Calcular el promedio
+  int Valor = total / numSamples;
+
+
+
+
+  
+  
+ // Resistencia de 100ohm en serie con medidor de combustible y alimentado de 3,3V
+
+// Valor =-0.00003*pow(Valor, 2)) + 0.0321*Valor + 91.297;
+
+//Nivel de agua medido con una varilla de 1 metro
+Valor =-0.0332*Valor+127.88;
+  
+if (Valor <=0.2) {  
+ Valor = 0;
+ }
+
+if(Valor > 90){
+  Valor = 100;
+}
+   
+ 
+  
+ 
+
+//envia el estado del Valor solamente cuando cambia.
+
+ // if (Valor != UltimoValor) { Serial.print("Nivel de agua: "); 
+ // Serial.print(Valor); Serial.println(" centimetros; "); 
+ // UltimoValor=Valor;
+// }
+ //else { Serial.print(Valor); Serial.println("%; ");
+     
+  //  }
+ Serial.print("Nivel de Agua: "); 
+ Serial.print(Valor); Serial.println(" cm; ");
+  Serial.println("-----------------------");
+
+  static char NA[7];
+    dtostrf(Valor, 6, 2, NA);
+
+    
+  
+    
+  client.publish("EMSETEC/SERIE17/AD3/NIVELAGUA:", NA);
+    
+ delay(1000); 
+  }
+
+
+ 
