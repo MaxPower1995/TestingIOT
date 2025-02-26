@@ -1,0 +1,58 @@
+Fecha Inicio,Hora Inicio,Fecha Fin,Hora Fin,ubicacion,sensor,id,sector,valor
+11/1/25,08:08,11/1/25,08:34,ED. Libertador,Detector,S1,ESTADO DEL GRUPO ELECTRÓGENO,ON
+4/1/25,09:16,4/1/25,09:46,Ed. Libertador,Detector,S1,ESTADO DEL GRUPO ELECTRÓGENO,ON
+4/1/25,11:03,4/1/25,11:32,Ed. Tronador,Detector,S1,ESTADO DEL GRUPO ELECTRÓGENO,ON
+4/1/25,11:21,-,-,Ed. Tronador,Tensión,24V,Voltaje Bateria,28.77 V
+13/1/25,17:24,13/1/25,17:27,O.C. Merlo.,Tensión,Trifásica,Voltaje Fase R,336.36 V
+13/1/25,08:49,13/1/25,09:16,SE Agronomia,Detector,S1,ESTADO DEL GRUPO ELECTRÓGENO,ON
+6/1/25,10:39,6/1/25,11:58,SE Edison,Detector,S1,Puerta Sala de comunicaciones,OFF
+6/1/25,14:18,8/1/25,09:06,SE Edison,Detector,S1,Puerta Sala de comunicaciones,ON
+7/1/25,00:02,8/1/25,09:33,SE Edison,Detector,S1,Puerta Sala de comunicaciones,ON
+8/1/25,00:04,-,-,SE Edison,Detector,S1,Puerta Sala de comunicaciones,ON
+8/1/25,09:16,-,-,SE Edison,Detector,S1,Puerta Sala de comunicaciones,ON
+14/1/25,18:49,14/1/25,19:31,SE Malaver,Temperatura,S3,Temperatura Ambiente,27.10 °C
+15/1/25,16:44,16/1/25,01:25,SE Malaver,Temperatura,S3,Temperatura Ambiente,27.10 °C
+16/1/25,00:00,-,-,SE Malaver,Temperatura,S3,Temperatura Ambiente,27.10 °C
+7/1/25,12:17,-,-,SE Morón,Detector,S2,Estado Aire Acondicionado 2,OFF
+8/1/25,00:04,-,-,SE Morón,Detector,S2,Estado Aire Acondicionado 2,OFF
+7/1/25,09:53,7/1/25,13:13,SE Morón,Detector,S3,Estado Aire Acondicionado 3,OFF
+11/1/25,11:29,11/1/25,11:31,SE Morón,Detector,S3,Estado Aire Acondicionado 3,OFF
+11/1/25,12:36,11/1/25,13:45,SE Morón,Detector,S3,Estado Aire Acondicionado 3,OFF
+14/1/25,13:35,-,-,SE Morón,Detector,S3,Estado Aire Acondicionado 3,OFF
+11/1/25,11:29,11/1/25,11:31,SE Morón,Detector,S4,Estado Aire Acondicionado 4,OFF
+11/1/25,12:36,11/1/25,13:45,SE Morón,Detector,S4,Estado Aire Acondicionado 4,OFF
+14/1/25,13:35,-,-,SE Morón,Detector,S4,Estado Aire Acondicionado 4,OFF
+2/1/25,03:39,2/1/25,04:06,SE Morón,Temperatura,S3,Temperatura Sala 2 Aires 3 y 4,27.20 °C
+2/1/25,04:22,2/1/25,05:49,SE Morón,Temperatura,S3,Temperatura Sala 2 Aires 3 y 4,27.20 °C
+2/1/25,09:02,2/1/25,09:56,SE Morón,Temperatura,S3,Temperatura Sala 2 Aires 3 y 4,27.20 °C
+2/1/25,10:13,2/1/25,10:33,SE Morón,Temperatura,S3,Temperatura Sala 2 Aires 3 y 4,27.20 °C
+2/1/25,11:20,2/1/25,11:43,SE Morón,Temperatura,S3,Temperatura Sala 2 Aires 3 y 4,27.20 °C
+2/1/25,11:59,2/1/25,12:23,SE Morón,Temperatura,S3,Temperatura Sala 2 Aires 3 y 4,27.20 °C
+2/1/25,12:39,2/1/25,12:56,SE Morón,Temperatura,S3,Temperatura Sala 2 Aires 3 y 4,27.10 °C
+2/1/25,13:13,2/1/25,14:18,SE Morón,Temperatura,S3,Temperatura Sala 2 Aires 3 y 4,27.30 °C
+14/1/25,00:25,14/1/25,00:49,SE Morón,Temperatura,S3,Temperatura Sala 2 Aires 3 y 4,27.10 °C
+14/1/25,01:08,14/1/25,01:50,SE Morón,Temperatura,S3,Temperatura Sala 2 Aires 3 y 4,27.20 °C
+14/1/25,02:06,14/1/25,02:29,SE Morón,Temperatura,S3,Temperatura Sala 2 Aires 3 y 4,27.20 °C
+14/1/25,02:46,14/1/25,03:18,SE Morón,Temperatura,S3,Temperatura Sala 2 Aires 3 y 4,27.10 °C
+14/1/25,03:34,14/1/25,04:04,SE Morón,Temperatura,S3,Temperatura Sala 2 Aires 3 y 4,27.10 °C
+14/1/25,04:23,14/1/25,04:53,SE Morón,Temperatura,S3,Temperatura Sala 2 Aires 3 y 4,27.60 °C
+14/1/25,05:10,14/1/25,05:51,SE Morón,Temperatura,S3,Temperatura Sala 2 Aires 3 y 4,27.10 °C
+14/1/25,06:08,14/1/25,06:36,SE Morón,Temperatura,S3,Temperatura Sala 2 Aires 3 y 4,27.10 °C
+14/1/25,06:53,14/1/25,07:13,SE Morón,Temperatura,S3,Temperatura Sala 2 Aires 3 y 4,27.20 °C
+14/1/25,07:32,14/1/25,07:53,SE Morón,Temperatura,S3,Temperatura Sala 2 Aires 3 y 4,27.10 °C
+14/1/25,08:09,14/1/25,08:35,SE Morón,Temperatura,S3,Temperatura Sala 2 Aires 3 y 4,27.20 °C
+14/1/25,08:51,14/1/25,09:18,SE Morón,Temperatura,S3,Temperatura Sala 2 Aires 3 y 4,27.10 °C
+14/1/25,09:35,-,-,SE Morón,Temperatura,S3,Temperatura Sala 2 Aires 3 y 4,27.10 °C
+6/1/25,23:54,14/1/25,21:39,SE Morón,Tensión,Trifásica,Voltaje Fase T,0.00 V
+6/1/25,23:55,14/1/25,21:40,SE Morón,Tensión,Trifásica,Voltaje fase R,0.00 V
+7/1/25,00:00,-,-,SE Morón,Tensión,Trifásica,Voltaje Fase T,0.00 V
+7/1/25,00:00,-,-,SE Morón,Tensión,Trifásica,Voltaje fase R,0.00 V
+14/1/25,20:11,-,-,SE Morón,Tensión,Trifásica,Voltaje Fase S,0.00 V
+14/1/25,20:12,-,-,SE Morón,Tensión,Trifásica,Voltaje Fase T,0.00 V
+14/1/25,20:12,-,-,SE Morón,Tensión,Trifásica,Voltaje fase R,0.00 V
+20/1/25,09:11,20/1/25,12:53,SE San Alberto,Detector,S1,Estado Aire Acondicionado 1,OFF
+7/1/25,08:12,7/1/25,10:01,SE San Alberto,Detector,S3,Estado Aire Acondicionado 3,OFF
+7/1/25,11:49,7/1/25,13:10,SE San Alberto,Detector,S3,Estado Aire Acondicionado 3,OFF
+20/1/25,09:11,20/1/25,12:53,SE San Alberto,Detector,S3,Estado Aire Acondicionado 3,OFF
+24/1/25,08:29,24/1/25,08:58,SE San Alberto,Detector,S3,Estado Aire Acondicionado 3,OFF
+7/1/25,12:46,7/1/25,13:13,SE San Alberto,Temperatura,S3,Temperatura Sala 2 Aire 3,27.10 °C

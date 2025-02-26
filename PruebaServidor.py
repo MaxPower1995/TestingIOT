@@ -11,7 +11,7 @@ def on_connect(client, userdata, flags, rc):
 
 # EN ESTA LINEA SE SUBSCRIBE COMO CLIENTE A TODO LO QUE ENVIA EL BROKER
 
-   client.subscribe("EMSETEC/SERIE2/#")
+   client.subscribe("EMSETEC/SERIE200/#")
    #client.subscribe("EMSETEC/#")
 
 
@@ -25,10 +25,10 @@ client.on_message = on_message
 
 
 #produccion
-#client.connect("143.198.66.52", 1884, 60)
+client.connect("143.198.66.52", 1884, 60)
 
 #prueba
-client.connect("143.244.186.22", 1884, 60)
+#client.connect("143.244.186.22", 1884, 60)
 
 client.username_pw_set("emsetec", "84705200")
 

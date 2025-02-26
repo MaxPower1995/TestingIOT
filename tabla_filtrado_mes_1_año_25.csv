@@ -1,0 +1,45 @@
+fecha_inicio,hora_inicio,fecha_fin,hora_fin,ubicacion,sensor,id,sector,valor_inicio,valor_fin
+02/01/25,03:39,02/01/25,14:18,SE Morón,Temperatura,S3,Temperatura Sala 2 Aires 3 y 4,27.20 °C,26.90 °C
+04/01/25,09:16,04/01/25,09:46,Ed. Libertador,Detector,S1,ESTADO DEL GRUPO ELECTRÓGENO,ON,OFF
+04/01/25,11:03,04/01/25,11:32,Ed. Tronador,Detector,S1,ESTADO DEL GRUPO ELECTRÓGENO,ON,OFF
+06/01/25,10:39,06/01/25,11:58,SE Edison,Detector,S1,Puerta Sala de comunicaciones,OFF,ON
+07/01/25,08:12,07/01/25,13:10,SE San Alberto,Detector,S3,Estado Aire Acondicionado 3,OFF,ON
+07/01/25,12:46,07/01/25,13:13,SE San Alberto,Temperatura,S3,Temperatura Sala 2 Aire 3,27.10 °C,26.20 °C
+07/01/25,09:53,07/01/25,13:13,SE Morón,Detector,S3,Estado Aire Acondicionado 3,OFF,ON
+07/01/25,00:00,N/A,N/A,SE Edison,Detector,S1,Puerta Sala de comunicaciones,ON,N/A
+08/01/25,00:00,08/01/25,09:33,SE Edison,Detector,S1,Puerta Sala de comunicaciones,ON,OFF
+11/01/25,08:08,11/01/25,08:34,ED. Libertador,Detector,S1,ESTADO DEL GRUPO ELECTRÓGENO,ON,OFF
+11/01/25,11:29,11/01/25,13:45,SE Morón,Detector,S3,Estado Aire Acondicionado 3,OFF,ON
+11/01/25,11:29,11/01/25,13:45,SE Morón,Detector,S4,Estado Aire Acondicionado 4,OFF,ON
+13/01/25,08:49,13/01/25,09:16,SE Agronomia,Detector,S1,ESTADO DEL GRUPO ELECTRÓGENO,ON,OFF
+13/01/25,17:24,13/01/25,17:27,O.C. Merlo.,Tensión,Trifásica,Voltaje Fase R,336.36 V,389.37 V
+14/01/25,00:25,14/01/25,09:18,SE Morón,Temperatura,S3,Temperatura Sala 2 Aires 3 y 4,27.10 °C,27.00 °C
+14/01/25,18:49,14/01/25,19:31,SE Malaver,Temperatura,S3,Temperatura Ambiente,27.10 °C,26.80 °C
+06/01/25,23:54,N/A,N/A,SE Morón,Tensión,Trifásica,Voltaje Fase T,0.00 V,N/A
+07/01/25,00:00,N/A,N/A,SE Morón,Tensión,Trifásica,Voltaje Fase T,0.00 V,N/A
+08/01/25,00:00,N/A,N/A,SE Morón,Tensión,Trifásica,Voltaje Fase T,0.00 V,N/A
+09/01/25,00:00,N/A,N/A,SE Morón,Tensión,Trifásica,Voltaje Fase T,0.00 V,N/A
+10/01/25,00:00,N/A,N/A,SE Morón,Tensión,Trifásica,Voltaje Fase T,0.00 V,N/A
+11/01/25,00:00,N/A,N/A,SE Morón,Tensión,Trifásica,Voltaje Fase T,0.00 V,N/A
+12/01/25,00:00,N/A,N/A,SE Morón,Tensión,Trifásica,Voltaje Fase T,0.00 V,N/A
+13/01/25,00:00,N/A,N/A,SE Morón,Tensión,Trifásica,Voltaje Fase T,0.00 V,N/A
+14/01/25,00:00,14/01/25,21:39,SE Morón,Tensión,Trifásica,Voltaje Fase T,0.00 V,398.54 V
+06/01/25,23:55,N/A,N/A,SE Morón,Tensión,Trifásica,Voltaje fase R,0.00 V,N/A
+07/01/25,00:00,N/A,N/A,SE Morón,Tensión,Trifásica,Voltaje fase R,0.00 V,N/A
+08/01/25,00:00,N/A,N/A,SE Morón,Tensión,Trifásica,Voltaje fase R,0.00 V,N/A
+09/01/25,00:00,N/A,N/A,SE Morón,Tensión,Trifásica,Voltaje fase R,0.00 V,N/A
+10/01/25,00:00,N/A,N/A,SE Morón,Tensión,Trifásica,Voltaje fase R,0.00 V,N/A
+11/01/25,00:00,N/A,N/A,SE Morón,Tensión,Trifásica,Voltaje fase R,0.00 V,N/A
+12/01/25,00:00,N/A,N/A,SE Morón,Tensión,Trifásica,Voltaje fase R,0.00 V,N/A
+13/01/25,00:00,N/A,N/A,SE Morón,Tensión,Trifásica,Voltaje fase R,0.00 V,N/A
+14/01/25,00:00,14/01/25,21:39,SE Morón,Tensión,Trifásica,Voltaje fase R,0.00 V,393.18 V
+14/01/25,20:11,14/01/25,21:40,SE Morón,Tensión,Trifásica,Voltaje Fase S,0.00 V,388.67 V
+15/01/25,16:44,N/A,N/A,SE Malaver,Temperatura,S3,Temperatura Ambiente,27.10 °C,N/A
+16/01/25,00:00,16/01/25,01:25,SE Malaver,Temperatura,S3,Temperatura Ambiente,27.10 °C,27.00 °C
+20/01/25,09:11,20/01/25,12:53,SE San Alberto,Detector,S1,Estado Aire Acondicionado 1,OFF,ON
+20/01/25,09:11,20/01/25,12:53,SE San Alberto,Detector,S3,Estado Aire Acondicionado 3,OFF,ON
+24/01/25,08:29,24/01/25,08:58,SE San Alberto,Detector,S3,Estado Aire Acondicionado 3,OFF,ON
+04/01/25,11:21,N/A,N/A,Ed. Tronador,Tensión,24V,Voltaje Bateria,28.77 V,N/A
+07/01/25,12:17,N/A,N/A,SE Morón,Detector,S2,Estado Aire Acondicionado 2,OFF,N/A
+14/01/25,13:35,N/A,N/A,SE Morón,Detector,S3,Estado Aire Acondicionado 3,OFF,N/A
+14/01/25,13:35,N/A,N/A,SE Morón,Detector,S4,Estado Aire Acondicionado 4,OFF,N/A

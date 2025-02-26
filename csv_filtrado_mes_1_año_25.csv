@@ -1,0 +1,103 @@
+Fecha,Hora,ubicacion,sensor,id,sector,estado,valor
+2/1/25,03:39,SE Morón,Temperatura,S3,Temperatura Sala 2 Aires 3 y 4,Alarmado,27.20 °C
+2/1/25,04:06,SE Morón,Temperatura,S3,Temperatura Sala 2 Aires 3 y 4,desalarmado,26.80 °C
+2/1/25,04:22,SE Morón,Temperatura,S3,Temperatura Sala 2 Aires 3 y 4,Alarmado,27.20 °C
+2/1/25,05:49,SE Morón,Temperatura,S3,Temperatura Sala 2 Aires 3 y 4,desalarmado,26.80 °C
+2/1/25,09:02,SE Morón,Temperatura,S3,Temperatura Sala 2 Aires 3 y 4,Alarmado,27.20 °C
+2/1/25,09:56,SE Morón,Temperatura,S3,Temperatura Sala 2 Aires 3 y 4,desalarmado,26.70 °C
+2/1/25,10:13,SE Morón,Temperatura,S3,Temperatura Sala 2 Aires 3 y 4,Alarmado,27.20 °C
+2/1/25,10:33,SE Morón,Temperatura,S3,Temperatura Sala 2 Aires 3 y 4,desalarmado,26.80 °C
+2/1/25,11:20,SE Morón,Temperatura,S3,Temperatura Sala 2 Aires 3 y 4,Alarmado,27.20 °C
+2/1/25,11:43,SE Morón,Temperatura,S3,Temperatura Sala 2 Aires 3 y 4,desalarmado,26.90 °C
+2/1/25,11:59,SE Morón,Temperatura,S3,Temperatura Sala 2 Aires 3 y 4,Alarmado,27.20 °C
+2/1/25,12:23,SE Morón,Temperatura,S3,Temperatura Sala 2 Aires 3 y 4,desalarmado,26.90 °C
+2/1/25,12:39,SE Morón,Temperatura,S3,Temperatura Sala 2 Aires 3 y 4,Alarmado,27.10 °C
+2/1/25,12:56,SE Morón,Temperatura,S3,Temperatura Sala 2 Aires 3 y 4,desalarmado,27.00 °C
+2/1/25,13:13,SE Morón,Temperatura,S3,Temperatura Sala 2 Aires 3 y 4,Alarmado,27.30 °C
+2/1/25,14:18,SE Morón,Temperatura,S3,Temperatura Sala 2 Aires 3 y 4,desalarmado,26.90 °C
+4/1/25,09:16,Ed. Libertador,Detector,S1,ESTADO DEL GRUPO ELECTRÓGENO,Alarmado,ON
+4/1/25,09:46,Ed. Libertador,Detector,S1,ESTADO DEL GRUPO ELECTRÓGENO,desalarmado,OFF
+4/1/25,11:03,Ed. Tronador,Detector,S1,ESTADO DEL GRUPO ELECTRÓGENO,Alarmado,ON
+4/1/25,11:21,Ed. Tronador,Tensión,24V,Voltaje Bateria,Alarmado,28.77 V
+4/1/25,11:32,Ed. Tronador,Detector,S1,ESTADO DEL GRUPO ELECTRÓGENO,desalarmado,OFF
+6/1/25,10:39,SE Edison,Detector,S1,Puerta Sala de comunicaciones,Alarmado,OFF
+6/1/25,11:58,SE Edison,Detector,S1,Puerta Sala de comunicaciones,desalarmado,ON
+6/1/25,14:18,SE Edison,Detector,S1,Puerta Sala de comunicaciones,Alarmado,ON
+6/1/25,23:54,SE Morón,Tensión,Trifásica,Voltaje Fase T,Alarmado,0.00 V
+6/1/25,23:55,SE Morón,Tensión,Trifásica,Voltaje fase R,Alarmado,0.00 V
+7/1/25,00:00,SE Morón,Tensión,Trifásica,Voltaje Fase T,Alarmado,0.00 V
+7/1/25,00:00,SE Morón,Tensión,Trifásica,Voltaje fase R,Alarmado,0.00 V
+7/1/25,00:02,SE Edison,Detector,S1,Puerta Sala de comunicaciones,Alarmado,ON
+7/1/25,08:12,SE San Alberto,Detector,S3,Estado Aire Acondicionado 3,Alarmado,OFF
+7/1/25,09:53,SE Morón,Detector,S3,Estado Aire Acondicionado 3,Alarmado,OFF
+7/1/25,10:01,SE San Alberto,Detector,S3,Estado Aire Acondicionado 3,desalarmado,ON
+7/1/25,11:49,SE San Alberto,Detector,S3,Estado Aire Acondicionado 3,Alarmado,OFF
+7/1/25,12:17,SE Morón,Detector,S2,Estado Aire Acondicionado 2,Alarmado,OFF
+7/1/25,12:46,SE San Alberto,Temperatura,S3,Temperatura Sala 2 Aire 3,Alarmado,27.10 °C
+7/1/25,13:10,SE San Alberto,Detector,S3,Estado Aire Acondicionado 3,desalarmado,ON
+7/1/25,13:13,SE San Alberto,Temperatura,S3,Temperatura Sala 2 Aire 3,desalarmado,26.20 °C
+7/1/25,13:13,SE Morón,Detector,S3,Estado Aire Acondicionado 3,desalarmado,ON
+8/1/25,00:04,SE Edison,Detector,S1,Puerta Sala de comunicaciones,Alarmado,ON
+8/1/25,00:04,SE Morón,Detector,S2,Estado Aire Acondicionado 2,Alarmado,OFF
+8/1/25,09:06,SE Edison,Detector,S1,Puerta Sala de comunicaciones,desalarmado,OFF
+8/1/25,09:16,SE Edison,Detector,S1,Puerta Sala de comunicaciones,Alarmado,ON
+8/1/25,09:33,SE Edison,Detector,S1,Puerta Sala de comunicaciones,desalarmado,OFF
+11/1/25,08:08,ED. Libertador,Detector,S1,ESTADO DEL GRUPO ELECTRÓGENO,Alarmado,ON
+11/1/25,08:34,ED. Libertador,Detector,S1,ESTADO DEL GRUPO ELECTRÓGENO,desalarmado,OFF
+11/1/25,11:29,SE Morón,Detector,S3,Estado Aire Acondicionado 3,Alarmado,OFF
+11/1/25,11:29,SE Morón,Detector,S4,Estado Aire Acondicionado 4,Alarmado,OFF
+11/1/25,11:31,SE Morón,Detector,S3,Estado Aire Acondicionado 3,desalarmado,ON
+11/1/25,11:31,SE Morón,Detector,S4,Estado Aire Acondicionado 4,desalarmado,ON
+11/1/25,12:36,SE Morón,Detector,S3,Estado Aire Acondicionado 3,Alarmado,OFF
+11/1/25,12:36,SE Morón,Detector,S4,Estado Aire Acondicionado 4,Alarmado,OFF
+11/1/25,13:45,SE Morón,Detector,S3,Estado Aire Acondicionado 3,desalarmado,ON
+11/1/25,13:45,SE Morón,Detector,S4,Estado Aire Acondicionado 4,desalarmado,ON
+13/1/25,08:49,SE Agronomia,Detector,S1,ESTADO DEL GRUPO ELECTRÓGENO,Alarmado,ON
+13/1/25,09:16,SE Agronomia,Detector,S1,ESTADO DEL GRUPO ELECTRÓGENO,desalarmado,OFF
+13/1/25,17:24,O.C. Merlo.,Tensión,Trifásica,Voltaje Fase R,Alarmado,336.36 V
+13/1/25,17:27,O.C. Merlo.,Tensión,Trifásica,Voltaje Fase R,desalarmado,389.37 V
+14/1/25,00:25,SE Morón,Temperatura,S3,Temperatura Sala 2 Aires 3 y 4,Alarmado,27.10 °C
+14/1/25,00:49,SE Morón,Temperatura,S3,Temperatura Sala 2 Aires 3 y 4,desalarmado,26.80 °C
+14/1/25,01:08,SE Morón,Temperatura,S3,Temperatura Sala 2 Aires 3 y 4,Alarmado,27.20 °C
+14/1/25,01:50,SE Morón,Temperatura,S3,Temperatura Sala 2 Aires 3 y 4,desalarmado,26.90 °C
+14/1/25,02:06,SE Morón,Temperatura,S3,Temperatura Sala 2 Aires 3 y 4,Alarmado,27.20 °C
+14/1/25,02:29,SE Morón,Temperatura,S3,Temperatura Sala 2 Aires 3 y 4,desalarmado,27.00 °C
+14/1/25,02:46,SE Morón,Temperatura,S3,Temperatura Sala 2 Aires 3 y 4,Alarmado,27.10 °C
+14/1/25,03:18,SE Morón,Temperatura,S3,Temperatura Sala 2 Aires 3 y 4,desalarmado,27.00 °C
+14/1/25,03:34,SE Morón,Temperatura,S3,Temperatura Sala 2 Aires 3 y 4,Alarmado,27.10 °C
+14/1/25,04:04,SE Morón,Temperatura,S3,Temperatura Sala 2 Aires 3 y 4,desalarmado,27.00 °C
+14/1/25,04:23,SE Morón,Temperatura,S3,Temperatura Sala 2 Aires 3 y 4,Alarmado,27.60 °C
+14/1/25,04:53,SE Morón,Temperatura,S3,Temperatura Sala 2 Aires 3 y 4,desalarmado,27.00 °C
+14/1/25,05:10,SE Morón,Temperatura,S3,Temperatura Sala 2 Aires 3 y 4,Alarmado,27.10 °C
+14/1/25,05:51,SE Morón,Temperatura,S3,Temperatura Sala 2 Aires 3 y 4,desalarmado,27.00 °C
+14/1/25,06:08,SE Morón,Temperatura,S3,Temperatura Sala 2 Aires 3 y 4,Alarmado,27.10 °C
+14/1/25,06:36,SE Morón,Temperatura,S3,Temperatura Sala 2 Aires 3 y 4,desalarmado,27.00 °C
+14/1/25,06:53,SE Morón,Temperatura,S3,Temperatura Sala 2 Aires 3 y 4,Alarmado,27.20 °C
+14/1/25,07:13,SE Morón,Temperatura,S3,Temperatura Sala 2 Aires 3 y 4,desalarmado,27.00 °C
+14/1/25,07:32,SE Morón,Temperatura,S3,Temperatura Sala 2 Aires 3 y 4,Alarmado,27.10 °C
+14/1/25,07:53,SE Morón,Temperatura,S3,Temperatura Sala 2 Aires 3 y 4,desalarmado,27.00 °C
+14/1/25,08:09,SE Morón,Temperatura,S3,Temperatura Sala 2 Aires 3 y 4,Alarmado,27.20 °C
+14/1/25,08:35,SE Morón,Temperatura,S3,Temperatura Sala 2 Aires 3 y 4,desalarmado,27.00 °C
+14/1/25,08:51,SE Morón,Temperatura,S3,Temperatura Sala 2 Aires 3 y 4,Alarmado,27.10 °C
+14/1/25,09:18,SE Morón,Temperatura,S3,Temperatura Sala 2 Aires 3 y 4,desalarmado,27.00 °C
+14/1/25,09:35,SE Morón,Temperatura,S3,Temperatura Sala 2 Aires 3 y 4,Alarmado,27.10 °C
+14/1/25,13:35,SE Morón,Detector,S3,Estado Aire Acondicionado 3,Alarmado,OFF
+14/1/25,13:35,SE Morón,Detector,S4,Estado Aire Acondicionado 4,Alarmado,OFF
+14/1/25,18:49,SE Malaver,Temperatura,S3,Temperatura Ambiente,Alarmado,27.10 °C
+14/1/25,19:31,SE Malaver,Temperatura,S3,Temperatura Ambiente,desalarmado,26.80 °C
+14/1/25,20:11,SE Morón,Tensión,Trifásica,Voltaje Fase S,Alarmado,0.00 V
+14/1/25,20:12,SE Morón,Tensión,Trifásica,Voltaje Fase T,Alarmado,0.00 V
+14/1/25,20:12,SE Morón,Tensión,Trifásica,Voltaje fase R,Alarmado,0.00 V
+14/1/25,21:39,SE Morón,Tensión,Trifásica,Voltaje Fase T,desalarmado,398.54 V
+14/1/25,21:39,SE Morón,Tensión,Trifásica,Voltaje fase R,desalarmado,393.18 V
+14/1/25,21:40,SE Morón,Tensión,Trifásica,Voltaje Fase S,desalarmado,388.67 V
+15/1/25,16:44,SE Malaver,Temperatura,S3,Temperatura Ambiente,Alarmado,27.10 °C
+16/1/25,00:00,SE Malaver,Temperatura,S3,Temperatura Ambiente,Alarmado,27.10 °C
+16/1/25,01:25,SE Malaver,Temperatura,S3,Temperatura Ambiente,desalarmado,27.00 °C
+18/1/25,09:32,ED. Tronador,Detector,S1,ESTADO DEL GRUPO ELECTRÓGENO,desalarmado,OFF
+20/1/25,09:11,SE San Alberto,Detector,S1,Estado Aire Acondicionado 1,Alarmado,OFF
+20/1/25,09:11,SE San Alberto,Detector,S3,Estado Aire Acondicionado 3,Alarmado,OFF
+20/1/25,12:53,SE San Alberto,Detector,S1,Estado Aire Acondicionado 1,desalarmado,ON
+20/1/25,12:53,SE San Alberto,Detector,S3,Estado Aire Acondicionado 3,desalarmado,ON
+24/1/25,08:29,SE San Alberto,Detector,S3,Estado Aire Acondicionado 3,Alarmado,OFF
+24/1/25,08:58,SE San Alberto,Detector,S3,Estado Aire Acondicionado 3,desalarmado,ON

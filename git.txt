@@ -1,0 +1,7 @@
+git init
+git add .
+git commit -m "Primer commit"
+git remote add origin https://github.com/MaxPower1995/TestingIOT.git
+git push -u origin main //No era main
+git branch -M main
+git push -u origin main
