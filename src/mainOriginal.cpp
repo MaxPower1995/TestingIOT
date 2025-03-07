@@ -88,19 +88,19 @@ Preferences preferences;
 //#########################################################################################
 //#########################################################################################
 
-#define EQUIPO "SERIE37"
-#define ESP_CLIENT_NAME espClient37
+#define EQUIPO "SERIE42"
+#define ESP_CLIENT_NAME espClient42
 WiFiClient ESP_CLIENT_NAME;
 PubSubClient client(ESP_CLIENT_NAME);
-const char* CLIENT_ID = "espClient37";
-float factorVoltaje = sqrt(3);
+const char* CLIENT_ID = "espClient42";
+float factorVoltaje = 1;
 //float factorVoltaje = 1;
 
 //float factor_bobina = 1;
-//float factor_bobina = 2;
+float factor_bobina = 2;
 //float factor_bobina = 40; //Austria bobinas negras abiertas
 //float factor_bobina = 100;
-float factor_bobina = 400;
+//float factor_bobina = 400;
 
 int maxWifiSSID = 3;
 int maxWifiRetry = 10;
@@ -351,8 +351,8 @@ void loop() {
     //leerBateriaGarin();
     //leerCombustibleGarin(); //Varilla de 25 cm
     //stopWiFi();
-    nivelTanquedeAgua2m();
-    nivelTanquedeAgua2m_sensor2();
+    //nivelTanquedeAgua2m();
+    //nivelTanquedeAgua2m_sensor2();
     //leerNA(); // Varilla de 1m
     
 
@@ -771,17 +771,17 @@ void enviarDatosMQTT(){
   //client.publish("EMSETEC/" EQUIPO "/DETECTOR1/ESTADO:", String(detector1).c_str());delay(250);
   //client.publish("EMSETEC/" EQUIPO "/DETECTOR2/ESTADO:", String(detector2).c_str());delay(250);
   //detector3 = (detector3 == "ON") ? "OFF" : "ON";
-  client.publish("EMSETEC/" EQUIPO "/DETECTOR1/ESTADO:", String(detector1).c_str());delay(250);
-  client.publish("EMSETEC/" EQUIPO "/DETECTOR2/ESTADO:", String(detector2).c_str());delay(250);
-  client.publish("EMSETEC/" EQUIPO "/DETECTOR3/ESTADO:", String(detector3).c_str());delay(250);
-  client.publish("EMSETEC/" EQUIPO "/DETECTOR4/ESTADO:", String(detector4).c_str());delay(250);
+  //client.publish("EMSETEC/" EQUIPO "/DETECTOR1/ESTADO:", String(detector1).c_str());delay(250);
+  //client.publish("EMSETEC/" EQUIPO "/DETECTOR2/ESTADO:", String(detector2).c_str());delay(250);
+  //client.publish("EMSETEC/" EQUIPO "/DETECTOR3/ESTADO:", String(detector3).c_str());delay(250);
+  //client.publish("EMSETEC/" EQUIPO "/DETECTOR4/ESTADO:", String(detector4).c_str());delay(250);
 
   //client.publish("EMSETEC/" EQUIPO "/DETECTOR5/ESTADO:", String(detector1).c_str());delay(250);
   //client.publish("EMSETEC/" EQUIPO "/DETECTOR6/ESTADO:", String(detector2).c_str());delay(250);
 
   //client.publish("EMSETEC/" EQUIPO "/AD3/NIVELAGUA:", NA); // Nivel de Inundacion
-  client.publish("EMSETEC/" EQUIPO "/SENSOR1/COMBUSTIBLE:", String(nivelTanque2m).c_str());delay(250); //Nivel de Tanque de Agua
-  client.publish("EMSETEC/" EQUIPO "/SENSOR2/COMBUSTIBLE:", String(nivelTanque2m_sensor2).c_str());delay(250); //Nivel de Tanque de Agua
+  //client.publish("EMSETEC/" EQUIPO "/SENSOR1/COMBUSTIBLE:", String(nivelTanque2m).c_str());delay(250); //Nivel de Tanque de Agua
+  //client.publish("EMSETEC/" EQUIPO "/SENSOR2/COMBUSTIBLE:", String(nivelTanque2m_sensor2).c_str());delay(250); //Nivel de Tanque de Agua
   //client.publish("EMSETEC/SERIE10/AD1/COMBUSTIBLE:", Comb);delay(250);
   //client.publish("EMSETEC/SERIE10/AD2/VOLTAJE:", Bat);delay(250);
 

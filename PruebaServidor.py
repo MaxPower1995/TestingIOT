@@ -11,7 +11,7 @@ def on_connect(client, userdata, flags, rc):
 
 # EN ESTA LINEA SE SUBSCRIBE COMO CLIENTE A TODO LO QUE ENVIA EL BROKER
 
-   client.subscribe("EMSETEC/SERIE200/#")
+   client.subscribe("EMSETEC/SERIE40/#")
    #client.subscribe("EMSETEC/#")
 
 

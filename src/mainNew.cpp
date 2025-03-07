@@ -48,6 +48,9 @@
 #define VECTOR 4
 #define ERROR 0
 
+#define RANGO_INF 0
+#define RANGO_SUP 100
+
 // HTML almacenado en un string (ya lo definimos antes)
 extern const char htmlPage[];
 extern WebServer server;
@@ -92,20 +95,20 @@ float humedad[4] = {0,0,0,0};
 float adc[4] = {0,0,0,0};
 float factorBobina = 1;
 
-int maxWifiSSID = 3;
+int maxWifiSSID = 4;
 int maxWifiRetry = 10;
-
+String CLIENT_ID;
+String EQUIPO;
 
 #define ESP_CLIENT_NAME espClient
 WiFiClient ESP_CLIENT_NAME;
 PubSubClient client(ESP_CLIENT_NAME);
 
-String CLIENT_ID;
-String EQUIPO;
 
-const char* redes[3][2] = {
+const char* redes[4][2] = {
     {"e-Invitados", "Edenor2022$"},
     {"EMSETEC4G", "IOT2024EMSETEC"},
+    {"EMSETEC-2.4GHz", "33710081099"},
     {"HUAWEI_311_1B94", "Maxpower1995"}
   };
 
@@ -118,6 +121,19 @@ void reconnect();
 void leerDHT11();
 void leerDS18B20();
 void configuracionPines();
+
+// ########################################################################################################################
+// ################## MEJORAS PARA EL SISTEMA #############################################################################
+// ########################################################################################################################
+
+// ----> Tengo que ponerle un temporizador para que no quede siempre en modo AP, nose 5 minutos
+// ----> Agregar la red del laboratorio
+// ----> Para seleccionar los adcs, quiza me convenga usar un if en el setup y despues un SWITCH/Diccionario
+// ----> sprintf(topicBuffer, "EMSETEC/%s/SENSOR1/HUMEDAD", EQUIPO.c_str());, guardaro en un string en el setup  asi no ejecuta multiples veces lo mismo
+
+// ########################################################################################################################
+// ########################################################################################################################
+// ########################################################################################################################
 
 void setup() {
   Serial.begin(115200);
@@ -149,16 +165,12 @@ void setup() {
   }
 
   if (config.sensor == "DHT11") {
-    dht1.begin();
-    dht2.begin();
-    dht3.begin();
-    dht4.begin();
+    dht1.begin();dht2.begin();
+    dht3.begin();dht4.begin();
     Serial.println("Se usan: DHT11");
   } else if (config.sensor == "DS18B20") {
-    sensors1.begin();
-    sensors2.begin();
-    sensors3.begin();
-    sensors4.begin();   
+    sensors1.begin();sensors2.begin();
+    sensors3.begin();sensors4.begin();   
     Serial.println("Se usan: DS18B20"); 
   } else {
     Serial.println("No se mide Temperatura");
@@ -208,9 +220,9 @@ void loop() {
   }
   tiempoActual = millis();
 
-    if (WiFi.getMode() == WIFI_AP) {
-      server.handleClient();
-    }else{
+  if (WiFi.getMode() == WIFI_AP) {
+    server.handleClient();
+  }else{
     // Aquí el resto de la lógica del dispositivo...
     if (WiFi.status() != WL_CONNECTED) {
       wifiInit(redes, maxWifiSSID, maxWifiRetry);
@@ -218,10 +230,52 @@ void loop() {
 
     Serial.println("Leyendo los Pzems");
     lecturaPzems();
-
-    enviarDatosMQTT();
+    if (config.sensor == "DHT11") {
+      leerDHT11();
+      Serial.println("Leyendo DHT11");
+    } else if (config.sensor == "DS18B20") {
+      leerDS18B20(); 
+      Serial.println("Leyendo DS18B20"); 
+    } else {
+      Serial.println("No se mide Temperatura");
     }
+    enviarDatosMQTT();
+  }
 
+
+// ------------ Automatizaciones ADC 1 ------------
+  if (config.adc1 == "Combustible") {
+    Serial.println("Se lee Combustible en el ADC1");
+    adc[0] = analogRead(ADC_1);
+  } else if (config.adc1 == "Bateria 12") {
+    Serial.println("Se lee Bateria 12V en el ADC1");
+    adc[0] = analogRead(ADC_1);
+  } else if (config.adc1 == "Bateria 24") {
+    Serial.println("Se lee Bateria 24V en el ADC1");
+    adc[0] = analogRead(ADC_1);
+  } else if (config.adc1 == "Nivel Inundacion") {
+    Serial.println("Se lee Bateria 36V en el ADC1");
+    adc[0] = analogRead(ADC_1);
+  }else {
+    Serial.println("No se mide ADC1");
+  }
+
+// ------------ Automatizaciones ADC 2 ------------
+  if (config.adc2 == "Combustible") {
+    Serial.println("Se lee Combustible en el ADC2");
+    adc[0] = analogRead(ADC_2);
+  } else if (config.adc2 == "Bateria 12") {
+    Serial.println("Se lee Bateria 12V en el ADC2");
+    adc[0] = analogRead(ADC_2);
+  } else if (config.adc2 == "Bateria 24") {
+    Serial.println("Se lee Bateria 24V en el ADC2");
+    adc[0] = analogRead(ADC_2);
+  } else if (config.adc2 == "Nivel Inundacion") {
+    Serial.println("Se lee Bateria 36V en el ADC1");
+    adc[0] = analogRead(ADC_2);
+  }else {
+    Serial.println("No se mide ADC2");
+  }
 
 }
 
@@ -408,26 +462,26 @@ void leerDHT11(){
   }
 
 void leerDS18B20(){
-    // Solicitar temperatura a cada sensor
-    sensors1.requestTemperatures();
-    sensors2.requestTemperatures();
-    sensors3.requestTemperatures();
-    sensors4.requestTemperatures();
+  // Solicitar temperatura a cada sensor
+  sensors1.requestTemperatures();
+  sensors2.requestTemperatures();
+  sensors3.requestTemperatures();
+  sensors4.requestTemperatures();
 
-      // Leer y mostrar las temperaturas
-    temperatura[0] = sensors1.getTempCByIndex(0);
-    temperatura[1] = sensors2.getTempCByIndex(0);
-    temperatura[2] = sensors3.getTempCByIndex(0);
-    temperatura[3] = sensors4.getTempCByIndex(0);
+  // Leer y mostrar las temperaturas
+  temperatura[0] = sensors1.getTempCByIndex(0);
+  temperatura[1] = sensors2.getTempCByIndex(0);
+  temperatura[2] = sensors3.getTempCByIndex(0);
+  temperatura[3] = sensors4.getTempCByIndex(0);
 
-    Serial.print("Temperatura Sensor 1: ");
-    Serial.println(temperatura[0]);
-    Serial.print("Temperatura Sensor 2: ");
-    Serial.println(temperatura[1]);
-    Serial.print("Temperatura Sensor 3: ");
-    Serial.println(temperatura[2]);
-    Serial.print("Temperatura Sensor 4: ");
-    Serial.println(temperatura[3]);
+  Serial.print("Temperatura Sensor 1: ");
+  Serial.println(temperatura[0]);
+  Serial.print("Temperatura Sensor 2: ");
+  Serial.println(temperatura[1]);
+  Serial.print("Temperatura Sensor 3: ");
+  Serial.println(temperatura[2]);
+  Serial.print("Temperatura Sensor 4: ");
+  Serial.println(temperatura[3]);
 }
 
 void lecturaPzems(){
@@ -556,54 +610,51 @@ void lecturaPzems(){
     sprintf(payloadBuffer, "%.2f", corriente[2]);
     client.publish(topicBuffer, payloadBuffer);
     delay(250);
-
-
-
   
-    if(temperatura[0] > 0){
+    if(temperatura[0] > RANGO_INF && temperatura[0] < RANGO_SUP){
       sprintf(topicBuffer, "EMSETEC/%s/SENSOR1/TEMPERATURA", EQUIPO.c_str());
       sprintf(payloadBuffer, "%.2f", temperatura[0]);
       client.publish(topicBuffer, payloadBuffer);
       delay(250);
   }
-  if(temperatura[1] > 0){
+  if(temperatura[1] > RANGO_INF && temperatura[1] < RANGO_SUP){
       sprintf(topicBuffer, "EMSETEC/%s/SENSOR2/TEMPERATURA", EQUIPO.c_str());
       sprintf(payloadBuffer, "%.2f", temperatura[1]);
       client.publish(topicBuffer, payloadBuffer);
       delay(250);
   }
-  if(temperatura[2] > 0){
+  if(temperatura[2] > RANGO_INF && temperatura[2] < RANGO_SUP){
       sprintf(topicBuffer, "EMSETEC/%s/SENSOR3/TEMPERATURA", EQUIPO.c_str());
       sprintf(payloadBuffer, "%.2f", temperatura[2]);
       client.publish(topicBuffer, payloadBuffer);
       delay(250);
   }
-  if(temperatura[3] > 0){
+  if(temperatura[3] > RANGO_INF && temperatura[3] < RANGO_SUP){
       sprintf(topicBuffer, "EMSETEC/%s/SENSOR4/TEMPERATURA", EQUIPO.c_str());
       sprintf(payloadBuffer, "%.2f", temperatura[3]);
       client.publish(topicBuffer, payloadBuffer);
       delay(250);
   }
 
-  if(humedad[0] > 0){
+  if(humedad[0] > RANGO_INF && humedad[0] < RANGO_SUP){
       sprintf(topicBuffer, "EMSETEC/%s/SENSOR1/HUMEDAD", EQUIPO.c_str());
       sprintf(payloadBuffer, "%.2f", humedad[0]);
       client.publish(topicBuffer, payloadBuffer);
       delay(250);
   }
-  if(humedad[1] > 0){
+  if(humedad[1] > RANGO_INF && humedad[1] < RANGO_SUP){
       sprintf(topicBuffer, "EMSETEC/%s/SENSOR2/HUMEDAD", EQUIPO.c_str());
       sprintf(payloadBuffer, "%.2f", humedad[1]);
       client.publish(topicBuffer, payloadBuffer);
       delay(250);
   }
-  if(humedad[2] > 0){
+  if(humedad[2] > RANGO_INF && humedad[2] < RANGO_SUP){
       sprintf(topicBuffer, "EMSETEC/%s/SENSOR3/HUMEDAD", EQUIPO.c_str());
       sprintf(payloadBuffer, "%.2f", humedad[2]);
       client.publish(topicBuffer, payloadBuffer);
       delay(250);
   }
-  if(humedad[3] > 0){
+  if(humedad[3] > RANGO_INF && humedad[3] < RANGO_SUP){
       sprintf(topicBuffer, "EMSETEC/%s/SENSOR4/HUMEDAD", EQUIPO.c_str());
       sprintf(payloadBuffer, "%.2f", humedad[3]);
       client.publish(topicBuffer, payloadBuffer);

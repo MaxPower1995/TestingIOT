@@ -12,3 +12,4 @@
 | 1.7 | 29/11/2024 | Se arregla problema de prioridad en tareas |
 | 1.8 | 29/11/2024 | Se agrega la lectura de los DS18B20 |
 | 1.9 | 04/12/2024 | Se arregla nomenclatura de los sensores |
+| 2.0 | 26/02/2025 | Server HTTP funcionando |
